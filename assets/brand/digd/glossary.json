@@ -1,0 +1,29 @@
+{
+  "brand": "dig.D",
+  "replacements": [
+    {"from": "DGD", "to": "dig.D"},
+    {"from": "Dgd", "to": "dig.D"},
+    {"from": "dgd", "to": "dig.D"},
+    {"from": "DigiD", "to": "dig.D"},
+    {"from": "Digid", "to": "dig.D"},
+    {"from": "DIGID", "to": "dig.D"},
+    {"from": "DiGiD", "to": "dig.D"},
+    {"from": "área", "to": "arte", "prev_any": ["entrega", "entregar", "só", "so"]},
+    {"from": "area", "to": "arte", "prev_any": ["entrega", "entregar", "só", "so"]},
+    {"from": "Área", "to": "arte", "prev_any": ["entrega", "entregar", "só", "so"]}
+  ],
+  "emph": [
+    "arte", "sistema", "funil", "crm", "posts", "operacao", "operação",
+    "corretora", "whatsapp", "agencia", "agência", "dig.d", "digd"
+  ],
+  "never_highlight": [
+    "um", "uma", "de", "da", "do", "que", "a", "o", "e", "pra", "para",
+    "com", "em", "no", "na", "por", "ao"
+  ],
+  "never_generate": [
+    "hacker hoodie",
+    "SOC / cyberpunk teal",
+    "oil-painting atelier as 'arte de agência'",
+    "lifestyle matcha / croissant as 'posts'"
+  ]
+}

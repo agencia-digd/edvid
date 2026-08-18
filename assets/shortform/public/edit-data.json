@@ -1,0 +1,37 @@
+{
+  "_readme": "Per-video data — the ONLY file to write in Phase 2 (besides public/ assets and, rarely, CustomGraphics.tsx). All times are SECONDS on the cut.mp4 output timeline. Never edit src/Main.tsx.",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "durationSec": 30,
+  "camera": {
+    "enabled": true,
+    "zooms": [1.14, 1.2, 1.12, 1.22, 1.16, 1.1, 1.18],
+    "pushIn": 0.04,
+    "targetX": 0.5,
+    "targetY": 0.4
+  },
+  "hook": {
+    "enabled": false,
+    "endSec": 4.0,
+    "style": "card",
+    "lines": ["HEADLINE LINHA 1", "HEADLINE LINHA 2"],
+    "logo": null,
+    "sign": null,
+    "_outline_hint": "style:'outline' → texto branco + contorno preto grosso, sem card, sentence-case, mais pra baixo. Escreva lines[] normal (não CAPS), tire logo/sign, e ajuste: fontSizePx(51), strokePx(7), paddingTop(330), lineHeight(1.06)."
+  },
+  "captions": {
+    "enabled": true,
+    "fontSize": 61,
+    "maxWords": 3,
+    "safeWidth": 720,
+    "paddingBottom": 420
+  },
+  "inserts": [],
+  "behind": [],
+  "soundtrack": {
+    "enabled": false,
+    "file": "trilha.mp3",
+    "volume": 0.0445
+  }
+}

@@ -1,0 +1,50 @@
+[project]
+name = "edvid"
+version = "0.1.0"
+description = "Conversation-driven video editor skill for Codex and Claude Code"
+license = { file = "LICENSE" }
+# Capped below 3.14: torch publishes no cp314 wheels, which silently broke BOTH
+# torch-backed extras (matting, whisperx) for anyone whose uv picked 3.14. The
+# base install works fine on 3.14 — the cap exists so the extras stay installable.
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "requests",
+    "pillow",
+    "numpy",
+    # Face/eye tracking for the Phase-2 dynamic camera (face_track.py). Pinned:
+    # opencv-python-headless 5.0.0.93 ships without CascadeClassifier and breaks
+    # Haar detection — stay on the 4.10 line. Headless = no GUI/Qt deps.
+    "opencv-python-headless==4.10.0.84",
+    # Transcription with forced alignment (transcribe.py). A BASE dependency on
+    # purpose: the skill must work with nothing to sign up for and no second
+    # thing to install. It pulls torch + faster-whisper (~2GB of wheels), and
+    # downloads a Whisper model plus a per-language wav2vec2 alignment model on
+    # first run. That weight is the price of a keyless install.
+    "whisperx",
+    # Editing from a URL (ingest_url.py). A dependency and not a system package
+    # on purpose: as an "optional" brew/winget install nobody had it, so the
+    # feature looked broken to anyone who pasted a link. In the venv it is always
+    # there, on every OS, and `uv run` puts .venv/bin first on PATH so the helper
+    # that shells out to `yt-dlp` finds it.
+    "yt-dlp",
+]
+
+[project.optional-dependencies]
+animations = ["manim"]
+# Person matting for the "element behind the subject" effect (person_matte.py).
+# Robust Video Matting via torch.hub — heavy (~2GB), so it's opt-in: install with
+# `uv sync --extra matting`. Base install stays light for users who don't need it.
+matting = ["torch", "torchvision"]
+
+# The one-command installer: `uvx --from git+<repo> edvid-install`, or plain
+# `uvx edvid-install` once this is on PyPI. Stdlib-only, so it runs before any
+# dependency exists — see edvid_install.py.
+[project.scripts]
+edvid-install = "edvid_install:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["edvid_install"]

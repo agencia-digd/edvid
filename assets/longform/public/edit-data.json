@@ -1,0 +1,17 @@
+{
+  "_readme": "Per-video data — the ONLY file to write in Phase 2. All times are SECONDS on the cut.mp4 output timeline. Set width/height/fps/durationSec to match cut.mp4 exactly. Never edit src/Main.tsx.",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "durationSec": 300,
+  "accent": "#33e0a3",
+  "broll": [],
+  "lowerThirds": [],
+  "chapters": [],
+  "callouts": [],
+  "soundtrack": {
+    "enabled": false,
+    "file": "trilha.mp3",
+    "volume": 0.0445
+  }
+}

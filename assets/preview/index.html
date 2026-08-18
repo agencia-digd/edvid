@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edvid — Preview</title>
+<link rel="icon" href="/assets/edvid-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Poppins italic 900 + Playfair italic 900 are NOT decoration here: the caption
+     previews render the real template styles, and the stacked style is built out
+     of exactly these faces (see STACK_MIXED in StackedCaptions.tsx). -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&family=Playfair+Display:ital,wght@1,900&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Libre+Baskerville:wght@700&family=Inter:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+
+<header class="glass">
+  <div class="logo-chip"><img src="/assets/edvid-logo-white.png" alt="Edvid"></div>
+  <div class="head-info">
+    <div id="projectName" class="project-name">—</div>
+    <div id="stateMessage" class="state-message"></div>
+  </div>
+  <div class="head-actions">
+    <span id="dirtyPill" class="pill hidden"><b id="dirtyCount">0</b> ajuste(s) não salvo(s)</span>
+    <span id="savedPill" class="pill saved hidden">✓ Salvo — peça ao chat para aplicar as alterações. *Se estiver editando no Claude, a aplicação é automática; basta aguardar.</span>
+    <button id="btnDiscard" class="btn ghost hidden">Descartar</button>
+    <button id="btnSave" class="btn primary hidden">Salvar ajustes</button>
+  </div>
+</header>
+
+<nav id="tabs" class="tabs">
+  <button class="tab active" data-tab="1"><span class="tab-num">FASE 1</span> Corte</button>
+  <!-- the gate lives BETWEEN the phases and stays reachable: changing the style
+       after Fase 2 exists is a normal thing to want, not a one-shot decision -->
+  <button class="tab" data-tab="style">Estilo</button>
+  <button class="tab" data-tab="2"><span class="tab-num">FASE 2</span> Visual</button>
+</nav>
+
+<main>
+  <section id="emptyState" class="empty glass hidden">
+    <div class="empty-inner">
+      <div class="empty-icon">🎬</div>
+      <h2>Aguardando o primeiro render</h2>
+      <p>Assim que o <code>cut.mp4</code> existir, a timeline aparece aqui sozinha.</p>
+    </div>
+  </section>
+
+  <!-- The style tab: what Fase 2 gets built as. Groups come from STYLE_CATALOG.
+       No descriptions anywhere — each preview renders the thing it names. -->
+  <section id="styleSetup" class="setup hidden">
+    <div class="setup-inner">
+      <div class="setup-head">
+        <h2>Como vamos montar a Fase 2?</h2>
+      </div>
+
+      <div class="setup-group">
+        <div class="group-head"><span class="group-title">Tipo de edição</span></div>
+        <div id="optEdit" class="opt-grid"></div>
+      </div>
+
+      <!-- Ahead of the text styles: the accent is what they paint with, so it is
+           set first and both preview groups below react to it. -->
+      <div class="setup-group">
+        <div class="group-head">
+          <span class="group-title">Cor de destaque</span>
+          <span class="group-note" id="accentNote"></span>
+        </div>
+        <div id="optAccent" class="swatches"></div>
+      </div>
+
+      <div class="setup-group">
+        <div class="group-head"><span class="group-title">Estilo de headline</span></div>
+        <div id="optHeadline" class="opt-grid"></div>
+      </div>
+
+      <div class="setup-group">
+        <div class="group-head"><span class="group-title">Estilo de legenda</span></div>
+        <div id="optCaptions" class="opt-grid"></div>
+      </div>
+
+      <div class="setup-group">
+        <div class="group-head"><span class="group-title">Elementos da edição</span></div>
+        <div id="optElements" class="check-row"></div>
+      </div>
+
+      <div class="setup-actions">
+        <textarea id="setupNote" rows="1" placeholder="Observações para a Fase 2 (opcional)"></textarea>
+        <button id="setupGo" class="btn primary">Confirmar e iniciar a Fase 2</button>
+      </div>
+      <span id="setupSummary" class="setup-summary"></span>
+    </div>
+  </section>
+
+  <div id="stage" class="stage">
+  <section id="playerWrap" class="player-wrap">
+    <div class="player-frame glass">
+      <video id="video" playsinline preload="auto"></video>
+    </div>
+  </section>
+
+  <div id="editorCol" class="editor-col">
+    <div class="transport glass">
+      <button id="btnPlay" class="btn icon" title="Play/Pause (espaço)"></button>
+      <button id="btnMute" class="btn icon" title="Mudo"></button>
+      <span id="timeNow" class="time">0:00.00</span>
+      <span class="time dim">/</span>
+      <span id="timeTotal" class="time dim">0:00.00</span>
+      <button id="btnMark" class="btn mark" title="Marcar IN / OUT (tecla M)">
+        <span id="markIcon"></span><span id="markText">IN</span>
+      </button>
+      <div class="spacer"></div>
+      <span class="dim small">zoom</span>
+      <input id="zoom" type="range" min="0" max="100" value="0" title="Zoom da timeline (centrado na agulha)">
+      <button id="btnFit" class="btn ghost small" title="Ajustar à janela">fit</button>
+    </div>
+
+    <section id="timelinePanel" class="timeline-panel glass">
+    <div id="timeline" class="timeline">
+      <div class="track ruler-track">
+        <div class="track-label"></div>
+        <div class="lane ruler-lane"><canvas id="ruler"></canvas></div>
+      </div>
+      <div class="track" id="trkNotes">
+        <div class="track-label"><span class="tl-chip notes" data-icon="notes" title="Marcações de ajuste"></span></div>
+        <div class="lane notes-lane" id="laneNotes"></div>
+      </div>
+      <div id="trkCaptions" class="track hidden">
+        <div class="track-label"><span class="tl-chip teal" data-icon="captions" title="Legendas"></span></div>
+        <div class="lane" id="laneCaptions"></div>
+      </div>
+      <div class="track">
+        <div class="track-label"><span class="tl-chip" data-icon="video" title="Vídeo"></span></div>
+        <div class="lane tall" id="laneVideo"></div>
+      </div>
+      <div class="track">
+        <div class="track-label">
+          <button class="tl-chip olive" id="jcutToggle" data-icon="audio"
+                  title="Áudio (mix)" aria-expanded="false"></button>
+        </div>
+        <div class="lane" id="laneAudio"><canvas id="wave"></canvas></div>
+      </div>
+      <!-- J-cut: takes alternate between A1 and A2 so the overlap is visible,
+           the way two audio tracks read in a real NLE timeline. Collapsed into the
+           audio track by default — expanded from the chip's caret.
+           NOTE: no wrapper with overflow:hidden around these. The gutter mask
+           rides position:sticky on .track-label, and an overflow ancestor would
+           make a new scroll container and strand it. -->
+      <div class="track jcut-track hidden" id="trkAudioA1">
+        <div class="track-label"><span class="tl-chip olive ghost" data-icon="audio" title="A1"></span></div>
+        <div class="lane jcut-lane" id="laneAudioA1"></div>
+      </div>
+      <div class="track jcut-track hidden" id="trkAudioA2">
+        <div class="track-label"><span class="tl-chip olive ghost" data-icon="audio" title="A2"></span></div>
+        <div class="lane jcut-lane" id="laneAudioA2"></div>
+      </div>
+      <div id="insertTracks" class="hidden"></div>
+      <div id="gutterLine" class="gutter-line"></div>
+      <div id="needle" class="needle"><div class="needle-head"></div></div>
+      </div>
+    </section>
+  </div>
+  </div>
+
+</main>
+
+<button id="btnHelp" class="help-fab" title="Atalhos e gestos" aria-label="Atalhos e gestos">?</button>
+
+<div id="helpBackdrop" class="help-backdrop hidden"></div>
+<div id="helpModal" class="help-modal glass hidden" role="dialog" aria-label="Atalhos e gestos">
+  <div class="help-head">
+    <span class="help-title">Atalhos e gestos</span>
+    <button id="helpClose" class="btn ghost small" title="Fechar">✕</button>
+  </div>
+  <ul class="help-list">
+    <li><span><kbd>espaço</kbd></span><span>play / pause</span></li>
+    <li><span><kbd>←</kbd><kbd>→</kbd></span><span>frame a frame · com <kbd>shift</kbd>, 1 segundo</span></li>
+    <li><span><kbd>M</kbd></span><span>marca <b>IN</b>, depois <b>OUT</b> — aí escreva o ajuste</span></li>
+    <li><span><kbd>delete</kbd></span><span>remove o take selecionado</span></li>
+    <li><span>arrastar</span><span>as <b>bordas</b> de um take ajustam o corte</span></li>
+    <li><span>duplo-clique</span><span>num take desfaz o ajuste dele</span></li>
+    <li><span>pinça</span><span>zoom no trackpad, onde está o cursor</span></li>
+    <li><span>barra de zoom</span><span>amplia a partir da agulha</span></li>
+  </ul>
+</div>
+
+<div id="noteEditor" class="note-editor glass hidden">
+  <div class="note-head">
+    <span class="note-range" id="noteRange">0:00 → 0:00</span>
+    <button id="noteClose" class="btn ghost small" title="Fechar">✕</button>
+  </div>
+  <textarea id="noteText" rows="3" placeholder="O que precisa mudar nesse trecho? Ex.: “corta o gaguejo”, “insere o logo da Amazon”, “abaixa a trilha”."></textarea>
+  <div class="note-actions">
+    <button id="noteDelete" class="btn ghost small hidden">remover</button>
+    <div class="spacer"></div>
+    <button id="noteOk" class="btn primary small">salvar marcação</button>
+  </div>
+</div>
+
+<div id="tooltip" class="tooltip hidden"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="/assets/app.js"></script>
+</body>
+</html>

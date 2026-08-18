@@ -1,0 +1,1124 @@
+/* Edvid preview — dark glassmorphism, brand: #ff7713 / #09b5b7 / #738b03 */
+:root {
+  --orange: #ff7713;
+  --teal: #09b5b7;
+  --olive: #738b03;
+  /* Accent painted by the text styles that carry one (realce/misto headlines,
+     stacked captions). NOT --orange: that is app chrome, and the two drifting
+     apart is the point — the user picks this one, the UI keeps its own. JS
+     overrides it on #styleSetup from the pick. */
+  --hl-accent: #ff5200;
+  --bg0: #08090c;
+  --bg1: #10141b;
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-strong: rgba(255, 255, 255, 0.08);
+  --stroke: rgba(255, 255, 255, 0.09);
+  --text: #eef1f5;
+  --dim: #8b94a3;
+  --radius: 16px;
+  /* the timeline panel is a SOLID surface so the gutter mask can use the exact
+     same colour and become invisible — see .track-label::before */
+  --panel-bg: #0f1218;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(9, 181, 183, 0.10), transparent 60%),
+    radial-gradient(1000px 500px at -10% 110%, rgba(255, 119, 19, 0.09), transparent 60%),
+    linear-gradient(160deg, var(--bg1), var(--bg0));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+}
+
+.hidden { display: none !important; }
+.dim { color: var(--dim); }
+.small { font-size: 11px; }
+
+/* ---------- header ---------- */
+header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 14px 0;
+  padding: 10px 14px;
+  flex: 0 0 auto;
+}
+
+.logo-chip { display: flex; align-items: center; }
+.logo-chip img { height: 26px; display: block; }
+
+.head-info { min-width: 0; }
+.project-name { font-weight: 900; font-size: 16px; letter-spacing: 0.2px; }
+.state-message { font-size: 12px; color: var(--dim); }
+
+.head-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.pill {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 119, 19, 0.14);
+  border: 1px solid rgba(255, 119, 19, 0.45);
+  color: #ffb377;
+}
+.pill.saved {
+  background: rgba(9, 181, 183, 0.14);
+  border-color: rgba(9, 181, 183, 0.45);
+  color: #6fe3e4;
+}
+
+.btn {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--glass-strong);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.05s;
+}
+.btn:hover { filter: brightness(1.25); }
+.btn:active { transform: scale(0.97); }
+.btn.primary {
+  background: linear-gradient(135deg, var(--orange), #ff9440);
+  border-color: transparent;
+  color: #fff;
+}
+.btn.ghost { background: transparent; }
+.btn.icon { padding: 8px 12px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.btn.icon svg { width: 13px; height: 13px; display: block; fill: currentColor; }
+.btn.small { padding: 5px 10px; font-size: 11px; }
+
+/* ---------- tabs ---------- */
+.tabs { display: flex; gap: 8px; margin: 10px 14px 0; flex: 0 0 auto; }
+
+.tab {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--dim);
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--stroke);
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+  padding: 9px 20px 11px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+.tab .tab-num { font-size: 10px; font-weight: 900; letter-spacing: 1.5px; color: var(--dim); margin-right: 8px; }
+.tab.active {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.11);
+  font-size: 14px;
+  padding: 11px 24px 13px;
+}
+.tab.active .tab-num { color: var(--orange); }
+.tab:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ---------- main ---------- */
+main { flex: 1 1 auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 14px 8px; min-height: 0; }
+
+.empty { flex: 1; display: flex; align-items: center; justify-content: center; }
+.empty-inner { text-align: center; padding: 40px; }
+.empty-icon { font-size: 42px; margin-bottom: 12px; }
+.empty h2 { font-weight: 900; font-size: 20px; margin-bottom: 6px; }
+.empty p { color: var(--dim); font-size: 13px; }
+.empty code { color: var(--teal); }
+
+/* ---------- player ---------- */
+.player-wrap { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; }
+
+/* transport + timeline travel together, so the pair can sit under the player
+   (landscape) or beside it (portrait) without touching the DOM again */
+/* the stage holds player + editor; main keeps the footer out of the split */
+.stage { flex: 1 1 auto; display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
+.editor-col { flex: 1 1 0; display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
+.editor-col .transport { align-self: center; }
+
+/* ---------- portrait layout: tall player right, editor left ----------
+   A 9:16 clip is postage-stamp sized when stacked above a full-width timeline.
+   Side by side, the player takes the full column height instead. */
+body.portrait .stage { flex-direction: row; align-items: stretch; gap: 12px; }
+body.portrait .player-wrap { order: 2; height: 100%; justify-content: flex-start; }
+body.portrait .player-frame { height: 100%; max-height: none; align-items: center; }
+body.portrait .player-frame video { height: 100%; width: auto; max-height: none; max-width: 38vw; }
+body.portrait .editor-col { order: 1; }
+body.portrait .editor-col .transport { align-self: stretch; width: auto; }
+
+.player-frame {
+  padding: 8px;
+  border-radius: 18px;
+  max-height: 42vh;
+  display: flex;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+.player-frame video {
+  max-height: calc(42vh - 16px);
+  max-width: 70vw;
+  border-radius: 12px;
+  display: block;
+  background: #000;
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  width: min(860px, 96%);
+}
+.transport .spacer { flex: 1; }
+.time {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  font-size: 12.5px;
+  letter-spacing: -0.2px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 130px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--glass-strong);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--orange);
+  cursor: pointer;
+}
+
+/* ---------- timeline ---------- */
+.timeline-panel {
+  flex: 1 1 0;
+  min-height: 190px;
+  background: var(--panel-bg);
+  padding: 10px 12px 10px 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+.timeline-panel::-webkit-scrollbar { height: 9px; width: 9px; }
+.timeline-panel::-webkit-scrollbar-track { background: transparent; }
+.timeline-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.timeline-panel::-webkit-scrollbar-thumb:hover { background: rgba(255, 119, 19, 0.45); background-clip: padding-box; }
+.timeline-panel::-webkit-scrollbar-corner { background: transparent; }
+
+.timeline { position: relative; min-width: 100%; min-height: 100%; }
+
+.track { display: flex; align-items: stretch; margin-bottom: 6px; }
+
+.track-label {
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* icon centred in the gutter */
+  position: sticky;
+  left: 0;
+  z-index: 15;
+}
+
+/* The gutter mask. Painted in the panel's own colour, so it reads as "no
+   background" while still hiding the lanes that scroll under it. It rides on the
+   sticky .track-label, which the browser pins natively — unlike a clip-path or a
+   JS scroll handler, this can never drift a frame behind the scroll.
+   top/bottom overshoot bridges the 6px gap between tracks so the column reads as
+   one piece. Absolutely positioned → .tl-chip needs position:relative. */
+.track-label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -8px;
+  background: var(--panel-bg);
+  pointer-events: none;
+}
+.ruler-track .track-label::before { bottom: -4px; }
+
+.gutter-line {
+  position: absolute;
+  top: -10px; /* eat the panel's vertical padding — the line runs edge to edge */
+  bottom: -10px;
+  left: 0;
+  width: 48px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  /* above .track-label (15) — the gutter mask would otherwise paint over the
+     divider on every row that has a track, leaving it visible only below them */
+  z-index: 16;
+  animation-name: gutter-follow-x;
+  animation-duration: auto;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: scroll(nearest inline);
+}
+
+/* The divider must track scrollLeft exactly. A JS scroll handler lags a frame
+   (the column visibly grew scrolling left and shrank scrolling right), so this
+   rides a scroll-driven timeline instead. `translate` is compositor-animatable;
+   clip-path is NOT — do not go back to clipping the lanes this way.
+   --max-scroll is the scroll range, set in JS on zoom/resize only. */
+@keyframes gutter-follow-x {
+  from { translate: 0 0; }
+  to { translate: var(--max-scroll, 0px) 0; }
+}
+/* icon card — same rounded language as the lanes/chips, no text labels */
+.tl-chip {
+  /* positioned so it paints ABOVE .track-label::before — an absolutely
+     positioned pseudo-element would otherwise cover a static child */
+  position: relative;
+  width: 30px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: var(--dim);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+}
+.tl-chip svg { width: 16px; height: 16px; fill: currentColor; display: block; }
+.tl-chip.teal { color: var(--teal); border-color: rgba(9, 181, 183, 0.3); background: rgba(9, 181, 183, 0.09); }
+.tl-chip.orange { color: var(--orange); border-color: rgba(255, 119, 19, 0.3); background: rgba(255, 119, 19, 0.09); }
+.tl-chip.olive { color: #a8c22b; border-color: rgba(168, 194, 43, 0.3); background: rgba(168, 194, 43, 0.09); }
+.tl-chip.notes { color: #ff5470; border-color: rgba(255, 84, 112, 0.32); background: rgba(255, 84, 112, 0.1); }
+
+.lane {
+  position: relative;
+  flex: 1 0 auto;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.lane.tall { height: 58px; }
+.ruler-lane { height: 26px; background: transparent; border: none; overflow: hidden; }
+.ruler-track { margin-bottom: 2px; }
+
+canvas { display: block; }
+
+/* clips */
+.clip {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04));
+  cursor: grab;
+  transition: box-shadow 0.12s;
+}
+.clip:hover { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3); z-index: 3; }
+.clip.selected { box-shadow: 0 0 0 2px var(--orange); z-index: 4; }
+.clip.dirty { border: 1.5px dashed var(--orange); }
+.clip.removed { opacity: 0.28; filter: grayscale(1); }
+.clip.removed::after {
+  content: 'REMOVIDO';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 900; letter-spacing: 1px; color: #ff6b6b;
+}
+
+.clip .thumbs { position: absolute; inset: 0; display: flex; overflow: hidden; }
+.clip .thumbs img { height: 100%; flex: 0 0 auto; pointer-events: none; opacity: 0.85; }
+
+.clip .clip-label {
+  position: absolute;
+  left: 6px; top: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.clip .clip-dur {
+  position: absolute;
+  right: 6px; bottom: 2px;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.clip .handle {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 9px;
+  cursor: ew-resize;
+  z-index: 3;
+}
+.clip .handle.l { left: 0; border-left: 3px solid transparent; }
+.clip .handle.r { right: 0; border-right: 3px solid transparent; }
+.clip:hover .handle.l { border-left-color: var(--orange); }
+.clip:hover .handle.r { border-right-color: var(--orange); }
+
+/* caption + insert chips */
+.chip {
+  position: absolute;
+  top: 5px; bottom: 5px;
+  border-radius: 6px;
+  font-size: 9.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chip.caption {
+  background: rgba(9, 181, 183, 0.16);
+  border: 1px solid rgba(9, 181, 183, 0.5);
+  color: #8ceeef;
+  pointer-events: none;
+}
+.chip.insert {
+  background: rgba(255, 119, 19, 0.16);
+  border: 1px solid rgba(255, 119, 19, 0.55);
+  color: #ffc08a;
+  cursor: grab;
+}
+.chip.insert.hook { background: rgba(115, 139, 3, 0.2); border-color: rgba(168, 194, 43, 0.6); color: #d3e87a; }
+.chip.insert.dirty { border-style: dashed; }
+.chip.music {
+  background: repeating-linear-gradient(-45deg, rgba(168, 194, 43, 0.14) 0 10px, rgba(168, 194, 43, 0.22) 10px 20px);
+  border: 1px solid rgba(168, 194, 43, 0.5);
+  color: #d3e87a;
+  pointer-events: none;
+  letter-spacing: 0.3px;
+}
+.chip .handle { position: absolute; top: 0; bottom: 0; width: 7px; cursor: ew-resize; }
+.chip .handle.l { left: 0; }
+.chip .handle.r { right: 0; }
+
+/* needle */
+.needle {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--orange);
+  z-index: 10;
+  pointer-events: none;
+}
+.needle-head {
+  position: absolute;
+  top: 0; left: -7px;
+  width: 12px; height: 14px;
+  background: var(--orange);
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
+}
+
+/* ---------- footer / tooltip / toast ---------- */
+kbd {
+  font-family: inherit;
+  font-size: 9.5px;
+  background: var(--glass-strong);
+  border: 1px solid var(--stroke);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin: 0 1px;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 100;
+  background: rgba(10, 12, 16, 0.92);
+  border: 1px solid rgba(255, 119, 19, 0.5);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+.tooltip .delta { color: var(--orange); }
+
+.toast {
+  position: fixed;
+  bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(10, 14, 18, 0.94);
+  border: 1px solid rgba(9, 181, 183, 0.55);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- correction markers (IN/OUT + note) ---------- */
+.btn.mark {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-left: 4px;
+  border-color: rgba(255, 84, 112, 0.35);
+  background: rgba(255, 84, 112, 0.1);
+  color: #ff8098;
+}
+.btn.mark svg { width: 13px; height: 13px; fill: currentColor; display: block; }
+/* an IN is open — the button now closes the range */
+.btn.mark.armed {
+  border-color: transparent;
+  color: #fff;
+  background: linear-gradient(135deg, #ff5470, #ff8098);
+}
+
+.notes-lane { height: 32px; background: rgba(255, 84, 112, 0.045); border-color: rgba(255, 84, 112, 0.14); }
+
+.note-chip {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  min-width: 8px;
+  border-radius: 7px;
+  background: rgba(255, 84, 112, 0.26);
+  border: 1px solid rgba(255, 84, 112, 0.6);
+  color: #ffd7de;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 24px;
+  padding: 0 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.note-chip:hover { background: rgba(255, 84, 112, 0.4); }
+/* the open IN, still waiting for its OUT */
+.note-pending {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ff5470;
+}
+.note-pending::after {
+  content: 'IN';
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  color: #ff8098;
+}
+
+.note-editor {
+  position: fixed;
+  z-index: 120;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 40px));
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(12, 16, 22, 0.97);
+  border: 1px solid rgba(255, 84, 112, 0.4);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(14px);
+}
+.note-head { display: flex; align-items: center; justify-content: space-between; }
+.note-range { font-size: 12px; font-weight: 900; letter-spacing: 0.8px; color: #ff8098; }
+.note-editor textarea {
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+}
+.note-editor textarea:focus { border-color: rgba(255, 84, 112, 0.55); }
+.note-actions { display: flex; align-items: center; gap: 8px; }
+.note-actions .spacer { flex: 1; }
+
+/* ---------- style setup (the gate between Fase 1 and Fase 2) ----------
+   Shown INSTEAD of the stage, so the choice is a step and not a floating dialog
+   the user can ignore. Everything here is built from STYLE_CATALOG in app.js. */
+.setup {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+.setup::-webkit-scrollbar { width: 9px; }
+.setup::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.setup-inner {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 2px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setup-head h2 { font-size: 16px; font-weight: 900; letter-spacing: 0.2px; }
+
+.setup-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.group-head { display: flex; align-items: baseline; gap: 10px; }
+.group-title { font-size: 11px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; }
+
+.opt-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.check-row { display: flex; flex-wrap: wrap; gap: 8px; }
+/* says where the accent actually lands — or that the picked styles use none */
+.group-note { font-size: 11px; color: var(--muted, rgba(255, 255, 255, 0.42)); }
+
+/* ---- accent picker: one spectral swatch + a hex field ----
+   No preset row. A grid of canned colours competes with the style cards for
+   attention and still never holds the brand colour the user came with. */
+.swatches { display: flex; gap: 9px; align-items: center; }
+.swatch {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: transform 0.14s;
+}
+.swatch:hover { transform: translateY(-1px); }
+/* the spectrum reads as "pick a colour"; the centre dot shows the current one,
+   so the control states the value without a second element */
+.swatch.custom {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    conic-gradient(#ff3d71, #ffc300, #12d18e, #09b5b7, #4d7cff, #b14dff, #ff3d71);
+}
+.swatch.custom::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--swatch-fill, #ff5200);
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.45), 0 0 0 2.5px rgba(255, 255, 255, 0.75);
+}
+.swatch.custom input[type='color'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+}
+
+.hex-field {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 32px;
+  padding: 0 10px 0 9px;
+  border-radius: 9px;
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  transition: border-color 0.14s;
+}
+.hex-field:focus-within { border-color: rgba(255, 119, 19, 0.5); }
+.hex-field.bad { border-color: rgba(255, 84, 112, 0.6); }
+.hex-hash { font-size: 12px; color: rgba(255, 255, 255, 0.35); }
+.hex-input {
+  width: 6.2em;
+  background: none;
+  border: 0;
+  outline: none;
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* option card — preview + title, nothing else. The preview IS the description:
+   the split mockup shows the layout, the caption demos render the real thing. */
+.opt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 7px;
+  border-radius: 12px;
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.opt:hover { border-color: rgba(255, 255, 255, 0.22); }
+.opt.on { border-color: var(--orange); background: rgba(255, 119, 19, 0.07); }
+/* only shown where the catalog has a SINGLE option — it explains the lone card */
+.opt.ghost {
+  border-style: dashed;
+  cursor: default;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--dim);
+  padding: 10px;
+  max-width: 108px;
+}
+.opt.ghost:hover { border-color: var(--stroke); }
+/* Only the mockup cards carry a title (a rendered caption labels itself), so this
+   is the edit row. Small and light on purpose: at 12px/600 the words drove the
+   card width. Two lines are reserved even for "Limpa" so every card is the same
+   height. */
+.opt-name {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.74);
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.opt.on .opt-name { color: rgba(255, 255, 255, 0.95); }
+
+/* the tick — a ring that fills, no glow */
+.opt-mark {
+  position: absolute;
+  top: 15px; right: 15px;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+}
+.opt.on .opt-mark { border-color: var(--orange); background: var(--orange); }
+.opt.on .opt-mark::after {
+  content: '';
+  position: absolute;
+  left: 4.4px; top: 1.6px;
+  width: 3.4px; height: 7px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(43deg);
+}
+
+.opt-preview {
+  position: relative;
+  border-radius: 9px;
+  background: #05070a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 9:16 mockup of the editing style. The card is PINNED to the mock's width, so a
+   long title can no longer stretch it — "Tela dividida 2" used to make its card
+   half again as wide as "Limpa" and the row read as three different sizes. The
+   titles wrap instead, and .opt-name reserves two lines so the cards stay level. */
+.opt-grid { --mock-h: 100px; --mock-w: calc(var(--mock-h) * 66 / 118); }
+.opt-preview.frame { height: var(--mock-h); width: var(--mock-w); }
+.opt-preview.frame svg { height: 100%; width: 100%; display: block; }
+/* + .opt padding (7px × 2) + border (1px × 2) */
+#optEdit .opt { width: calc(var(--mock-w) + 16px); }
+/* caption demos: a crop of the caption band, at the real proportions */
+.opt-preview.cap { height: 64px; width: 182px; }
+.opt-preview.hlbox { height: 64px; }
+
+/* Short panes (the preview often lives in a half-height pane): shrink the
+   previews instead of scrolling. The demos are rebuilt on resize, so their
+   internal scale follows the box — see renderSetup on the resize handler. */
+@media (max-height: 760px) {
+  .setup-inner { gap: 10px; }
+  .setup-head h2 { font-size: 16px; }
+  .setup-head p { display: none; }
+  .opt-grid { --mock-h: 108px; }
+  .opt-preview.cap { height: 76px; width: 162px; }
+  .opt-preview.hlbox { height: 64px; }
+  .chk { padding: 7px 12px 7px 10px; }
+}
+/* very short panes: the summary line is the first thing to go — the cards and
+   the checkboxes already say the same thing, in place */
+@media (max-height: 620px) {
+  .setup-summary { display: none; }
+  .setup-head h2 { font-size: 15px; }
+  .opt-grid { --mock-h: 92px; }
+  .opt-preview.cap { height: 64px; width: 142px; }
+  .opt-preview.hlbox { height: 56px; }
+}
+
+/* ---- caption demos: the template's own styles, not an impression of them ----
+   Karaoke: Poppins 900, white, letterSpacing -1, words rise 34px and fade in
+   over 7 frames. Stacked: the STACK_MIXED line styles (bold-italic gradient,
+   regular small, Playfair italic orange), words rise 46px with a blur-off.
+   Geometry is scaled from 1080-wide, so every ratio matches the render.
+   Positions/opacities are written by JS each frame (capAnims in app.js). */
+.cap-demo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.kar-line {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -1px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+}
+.kar-line span { display: inline-block; will-change: opacity, translate; }
+
+.stk-cue { position: absolute; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.stk-line { white-space: pre; letter-spacing: -1.5px; line-height: 1.12; }
+.stk-line + .stk-line { margin-top: -0.34em; }
+.stk-line span { display: inline-block; padding: 0 0.06em; will-change: opacity, translate, filter; }
+/* 0 = bold-italic, 1 = regular (small), 2 = serif orange — the cycle the
+   template applies per line (LINE_STYLES in StackedCaptions.tsx).
+   These land on the WORD spans, exactly like the template spreads `...ls` onto
+   each span. On the line div the gradient renders nothing: the spans carry a
+   drop-shadow filter, which paints them in their own layer, and an inherited
+   -webkit-text-fill-color:transparent then leaves plain invisible text. */
+.stk-line .s0, .stk-line .s1, .stk-line .s3 {
+  background-image: linear-gradient(180deg, #fff 0%, #fff 46%, #cfcfcf 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.stk-line .s0 { font-family: 'Poppins', sans-serif; font-weight: 900; font-style: italic; }
+.stk-line .s1 { font-family: 'Poppins', sans-serif; font-weight: 400; }
+.stk-line .s2 { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; color: var(--hl-accent); }
+.stk-line .s3 { font-family: 'Poppins', sans-serif; font-weight: 800; }
+
+/* scatter ("disperso") — Lora, lowercase, off-white with the same baseline
+   darkening the render uses. The gradient sits on the WORD, not the block:
+   per-block it reads as a wash instead of ink weight. */
+.scat-cue { position: absolute; display: flex; flex-direction: column; align-items: center; }
+.scat-line { display: flex; align-items: baseline; white-space: pre; line-height: 1.03; }
+.scat-line span {
+  font-family: 'Lora', serif;
+  font-weight: 400;
+  background-image: linear-gradient(180deg, #f8f5ef 0%, #f4f1e9 54%, #d5cec1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  will-change: opacity, filter;
+}
+.scat-line span.hi { font-weight: 600; font-style: italic; }
+
+/* the three static styles — flat off-white, no animation, nothing to drive */
+.stat-demo {
+  position: absolute;
+  text-align: center;
+  color: #f4f1e9;
+  line-height: 1.18;
+  white-space: pre;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+}
+
+/* ---- headline demos: the template's hook styles, same scaling contract ----
+   Sizes and line breaks are computed in JS (buildHeadlineDemo) because the
+   template computes them too — only the look lives here. */
+.hl-demo {
+  position: absolute;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  white-space: pre;
+}
+.hl-outline {
+  font-weight: 800;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+.hl-card {
+  font-weight: 900;
+  background: #232326;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+.hl-realce { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hl-realce .hl-block {
+  background: var(--hl-accent);
+  color: #fff;
+  font-weight: 900;
+  padding: 0.08em 0.3em 0.16em;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.45);
+}
+.hl-misto { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55)); }
+
+/* element chip — icon + title, one line */
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 13px 7px 10px;
+  border-radius: 11px;
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.chk:hover { border-color: rgba(255, 255, 255, 0.22); }
+.chk.on { border-color: rgba(9, 181, 183, 0.5); background: rgba(9, 181, 183, 0.06); }
+.chk-box {
+  position: relative;
+  flex: 0 0 auto;
+  width: 16px; height: 16px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+}
+.chk.on .chk-box { border-color: var(--teal); background: var(--teal); }
+.chk.on .chk-box::after {
+  content: '';
+  position: absolute;
+  left: 4.6px; top: 1.4px;
+  width: 3.6px; height: 7.4px;
+  border: solid #071417;
+  border-width: 0 2px 2px 0;
+  transform: rotate(43deg);
+}
+.chk-ico { flex: 0 0 auto; width: 17px; height: 17px; color: var(--dim); }
+.chk-ico svg { width: 17px; height: 17px; fill: currentColor; display: block; }
+.chk.on .chk-ico { color: var(--teal); }
+.chk-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+
+#setupNote {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--stroke);
+  border-radius: 11px;
+  padding: 9px 12px;
+  resize: none;
+  outline: none;
+}
+#setupNote:focus { border-color: rgba(255, 119, 19, 0.5); }
+
+.setup-actions { display: flex; align-items: center; gap: 12px; }
+.setup-actions .btn { flex: 0 0 auto; }
+.setup-summary { font-size: 11px; font-weight: 400; color: var(--dim); }
+
+/* ---------- help (was the footer hint strip) ---------- */
+.help-fab {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+  z-index: 90;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--dim);
+  /* opaque: in the portrait split it sits over the player, and a translucent
+     chip disappears against the footage */
+  background: rgba(14, 18, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.help-fab:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.3); }
+
+.help-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  background: rgba(0, 0, 0, 0.5);
+}
+.help-modal {
+  position: fixed;
+  z-index: 131;
+  left: 16px;
+  bottom: 44px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 14px 16px 16px;
+  background: rgba(12, 16, 22, 0.97);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
+.help-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.help-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: var(--text); }
+.help-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.help-list li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--dim);
+}
+.help-list li > span:first-child { text-align: right; color: rgba(255, 255, 255, 0.55); }
+.help-list b { color: var(--text); font-weight: 600; }
+.help-list kbd {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--glass-strong);
+  border: 1px solid var(--stroke);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin: 0 1px;
+}
+
+/* ---------- J-cut audio lanes (A1 / A2) ----------
+ * Takes alternate between the two lanes so an overlap reads as an overlap. On a
+ * single lane two blocks that share time look like one continuous block, which
+ * is exactly the thing the user needs to see. Shorter and dimmer than the video
+ * track — these are for reading the seam, not for editing.
+ *
+ * They live FOLDED inside the audio track, opened from the caret on its chip.
+ * The reveal animates the BLOCKS, not the track height: collapsing by height
+ * needs overflow:hidden on an ancestor, and that would create a new scroll
+ * container and strand the sticky .track-label the gutter mask rides on.
+ */
+.jcut-track .lane.jcut-lane { height: 22px; }
+
+/* the audio chip doubles as the disclosure control */
+button.tl-chip { font: inherit; padding: 0; }
+button.tl-chip:disabled { cursor: default; }
+.tl-chip.disclose { cursor: pointer; }
+/* hit area out to the gutter edges — the chip is only 30x28 and a click on its
+   border missed. Invisible, so the row still reads as a plain icon. */
+.tl-chip.disclose::before {
+  content: '';
+  position: absolute;
+  inset: -7px -9px;
+}
+/* Tucked INSIDE the chip, centred on its base — hanging off the corner turned the
+   rounded square into a speech bubble. It fits because the speaker glyph does not
+   fill its 16px box: the art bottoms out around y=12.6, leaving clear space under
+   it. Keep translateX(-50%) in both transform values or the caret jumps sideways
+   when it flips. */
+.tl-chip.disclose::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 2.5px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.7;
+  transform: translateX(-50%);
+  transition: transform 0.16s ease, opacity 0.16s ease;
+}
+.tl-chip.disclose svg { margin-bottom: 3px; } /* clear the caret's row */
+.tl-chip.disclose:hover { background: rgba(168, 194, 43, 0.16); }
+.tl-chip.disclose:hover::after { opacity: 1; }
+.tl-chip.disclose[aria-expanded='true'] { background: rgba(168, 194, 43, 0.2); }
+.tl-chip.disclose[aria-expanded='true']::after {
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.jcut-track:not(.hidden) .ablock { animation: ablock-in 0.18s ease both; }
+@keyframes ablock-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jcut-track:not(.hidden) .ablock { animation: none; }
+  .tl-chip.disclose::after { transition: none; }
+}
+.ablock {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(168, 194, 43, 0.34);
+  background: linear-gradient(180deg, rgba(168, 194, 43, 0.20), rgba(168, 194, 43, 0.08));
+}
+.ablock-label {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(233, 245, 190, 0.85);
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* the lead — voice already playing while the previous take is still on screen */
+.ablock-lead {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 119, 19, 0.42) 0 3px,
+    rgba(255, 119, 19, 0.12) 3px 6px
+  );
+  border-right: 1px solid rgba(255, 119, 19, 0.75);
+}
+.tl-chip.ghost { opacity: 0.55; }

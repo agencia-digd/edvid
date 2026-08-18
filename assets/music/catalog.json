@@ -1,0 +1,74 @@
+{
+  "source": "Mixkit",
+  "license": "https://mixkit.co/license/#musicFree",
+  "license_file": "LICENSE.md",
+  "note": "Instrumental beds for Phase 3 when Treblo is off. Pick by mood.",
+  "beds": [
+    {
+      "id": "tense",
+      "file": "beds/silent-descent.mp3",
+      "title": "Silent Descent",
+      "artist": "Eugenio Mininni",
+      "mood": "tense",
+      "use_when": "gancho de segredo, sussurro, tese grave, contraste",
+      "duration_s": 160,
+      "url": "https://assets.mixkit.co/music/614/614.mp3",
+      "page": "https://mixkit.co/free-stock-music/tag/cinematic/"
+    },
+    {
+      "id": "punch",
+      "file": "beds/trap-electro-vibes.mp3",
+      "title": "Trap Electro Vibes",
+      "artist": "Alejandro Magaña (A. M.)",
+      "mood": "punch",
+      "use_when": "Reel de energia, CTA agressivo, corte rápido",
+      "duration_s": 116,
+      "url": "https://assets.mixkit.co/music/126/126.mp3",
+      "page": "https://mixkit.co/free-stock-music/electronic/"
+    },
+    {
+      "id": "warm",
+      "file": "beds/digital-clouds.mp3",
+      "title": "Digital Clouds",
+      "artist": "Alejandro Magaña (A. M.)",
+      "mood": "warm",
+      "use_when": "tutorial, explicação, tom parceiro",
+      "duration_s": 101,
+      "url": "https://assets.mixkit.co/music/175/175.mp3",
+      "page": "https://mixkit.co/free-stock-music/electronic/"
+    },
+    {
+      "id": "cta",
+      "file": "beds/uplifting-bass.mp3",
+      "title": "Uplifting Bass",
+      "artist": "Lily J",
+      "mood": "cta",
+      "use_when": "pedido de ação, fechamento, convite",
+      "duration_s": 96,
+      "url": "https://assets.mixkit.co/music/726/726.mp3",
+      "page": "https://mixkit.co/free-stock-music/electronic/"
+    },
+    {
+      "id": "dark",
+      "file": "beds/tapis.mp3",
+      "title": "Tapis",
+      "artist": "Eugenio Mininni",
+      "mood": "dark",
+      "use_when": "mistério, ameaça, 'o que ninguém conta'",
+      "duration_s": 163,
+      "url": "https://assets.mixkit.co/music/615/615.mp3",
+      "page": "https://mixkit.co/free-stock-music/tag/cinematic/"
+    },
+    {
+      "id": "tech",
+      "file": "beds/sci-fi-score.mp3",
+      "title": "Sci-Fi Score",
+      "artist": "Arulo",
+      "mood": "tech",
+      "use_when": "sistema, operação, CRM, produto, agência",
+      "duration_s": 97,
+      "url": "https://assets.mixkit.co/music/464/464.mp3",
+      "page": "https://mixkit.co/free-stock-music/electronic/"
+    }
+  ]
+}
