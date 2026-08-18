@@ -1,66 +1,47 @@
-# Usar no Claude do celular
+# Codex (GPT) e Claude Code no celular
 
-Este repo é a skill **Edvid** — editor de vídeo por conversa, com o que a dig.D mudou em cima do original (Creator Factory).
+Sim — **se você abrir este repo no Codex ou no Claude Code**, não é só chat.
+Eles sobem um ambiente Linux e rodam comando. Dá pra instalar e renderizar.
 
-## O que o celular faz e o que não faz
+Não precisa que eu te mande a skill Edvid à parte: ela **já está neste repo**
+(`SKILL.md` + `helpers/` + `CLAUDE.md`). A única skill extra da Fase 2
+(legendas/Remotion) também já veio junto: `skills/remotion-best-practices/`.
 
-No iPhone/Android o Claude **lê** esta skill e te guia (estratégia, corte, estilo).  
-O **render** (transcrever, cortar, legendas, mp4) precisa de um computador com `ffmpeg` + `uv` + Node — o Mac da Dani já tem.
+## Como abrir
 
-Dois jeitos de trabalhar no celular:
+1. App **ChatGPT → Codex** *ou* app **Claude → Claude Code**.
+2. **Clone / Open from GitHub:** `agencia-digd/edvid` (conta da org; o repo é privado).
+3. Primeira mensagem:
 
-### A — Claude no celular + Mac renderizando (o que funciona hoje)
+   *“Lê o CLAUDE.md e o SKILL.md. Instala o que faltar (uv sync, ffmpeg, node). Quando estiver pronto, eu mando o vídeo.”*
 
-1. No celular: app Claude → **Projects** → projeto novo → **Add from GitHub** → `agencia-digd/edvid`.
-2. Manda o vídeo (ou o link) e fala o que quer: *“edita isso num Reels, 20s, estilo split”*.
-3. O Claude do celular segue o `SKILL.md` e te devolve o plano / EDL / o que falta decidir.
-4. Quando for **gerar o mp4**, abre o Claude Code no Mac (ou manda pra Dora) na pasta do vídeo e fala: *“continua o Edvid, o plano está no projeto”*.
+4. Anexa o take (ou cola o link do Instagram/Drive).
+5. *“Edita isso num Reels. Propõe a estratégia e espera eu aprovar o corte.”*
 
-### B — Claude Code no Mac, você só manda áudio/vídeo pelo celular
+## O que o ambiente precisa (ele mesmo instala)
 
-1. No Mac: `cd ~/Videos/meu-take && claude`
-2. Primeira vez: a skill já está em `~/.claude/skills/edvid` (é esta).
-3. *“edita o arquivo X num Reels”*.
-4. Você acompanha o preview e marca o que recusa.
+| Peça | Onde está |
+|---|---|
+| Método + regras da casa | `SKILL.md`, `CLAUDE.md` |
+| Scripts (corte, whisper, social) | `helpers/` |
+| Remotion (Fase 2) | `skills/remotion-best-practices/` |
+| `ffmpeg`, `uv`, Node 18+ | o agente instala no Linux da sessão |
+| WhisperX (~2 GB na 1ª vez) | `uv sync` neste repo |
 
-Não existe ingest automático do Telegram: vídeo que chega no chat **não** entra na edição até você pedir pelo nome do arquivo.
+Primeira sessão é **lenta** (baixa modelo de transcrição). As seguintes, não.
 
-## O que falar (prompts que funcionam)
+## O que ainda pode travar no celular
 
-- *“Inventaria essas tomadas e me propõe a estratégia. Não corta ainda.”*
-- *“Edita o IMG_3136 num Reels de ~20s. Espera eu aprovar o corte.”*
-- *“Aprova o corte. Abre a aba Estilo.”*
-- *“Deleta de 4.2 a 5.4. Recorta.”*
+- **Vídeo grande:** anexa um take de 30–90s, não um 4K de 10 min.
+- **Preview visual** (timeline no browser): no celular costuma ficar ruim. Você aprova pelo mp4 que o agente te devolve.
+- **Tempo da sessão cloud:** se a 1ª instalação estourar, manda *“continua o uv sync”* no mesmo thread.
+- **Repo privado:** a conta do app precisa ver `agencia-digd`. Se o Codex/Claude não listar o repo, me fala o user que eu te coloco.
+
+## O que falar
+
+- *“Inventaria e me propõe a estratégia. Não corta ainda.”*
+- *“Edita o arquivo X num Reels de ~20s. Espera eu aprovar.”*
+- *“Aprova o corte. Segue a Fase 2.”*
 - *“Gera o social (final-social.mp4).”*
 
-## O que a dig.D mudou no principal
-
-Isto **não** é o Edvid virgem do Fill. Em cima do original:
-
-1. **Telegram não auto-ingere** — só edita quando você pede.
-2. **QA de legenda** (`caption_qa.py`) — DGD→dig.D, área→arte, sem realçar “um/que”.
-3. **Brand pack** em `assets/brand/digd/` — ilustra tese, não substantivo (sem hoodie/matcha).
-4. **Trilha Mixkit local** — Treblo pago não é obrigatório. Sem chave, não entrega mudo.
-5. **`encode_social.py`** depois de todo `final.mp4` — arquivo leve pro Instagram.
-6. **CTA sem split** no último pedido (*toca aqui / fala com a gente*).
-
-## Instalação (só no computador, uma vez)
-
-Mac:
-
-```bash
-brew install uv ffmpeg node git
-# fecha e reabre o terminal
-cd /caminho/deste/repo
-uv sync
-# symlink da skill (se ainda não estiver)
-ln -sfn "$(pwd)" ~/.claude/skills/edvid
-```
-
-Aí o Claude Code no Mac encontra a skill sozinho.
-
-## Pastas
-
-- Material bruto: qualquer pasta sua.
-- Resultado: `<pasta>/edit/` (`cut.mp4` → aprovação → `final.mp4` → `final-social.mp4`).
-- Originais **nunca** são alterados.
+Telegram **não** entra sozinho. Só edita o arquivo que você nomeou.

@@ -8,8 +8,8 @@ aprovação — depois entram legendas, gráficos e trilha.
 Este é o **Edvid da casa** (em cima do original [fillrochaa/edvid](https://github.com/fillrochaa/edvid)).  
 O que mudamos no principal está em [USO-CELULAR.md](USO-CELULAR.md).
 
-**Celular (Claude ou GPT):** leia [USO-CELULAR.md](USO-CELULAR.md).  
-O app lê o método; o mp4 sai no Mac.
+**Celular:** abra este repo no **Codex (app GPT)** ou no **Claude Code (app Claude)**.  
+Não é chat solto — eles rodam comando. Guia: [USO-CELULAR.md](USO-CELULAR.md).
 
 Funciona em **short-form vertical** (Reels/TikTok/Shorts) e **longform
 horizontal** (YouTube). Transcrição **local** (WhisperX). Sem cota.
